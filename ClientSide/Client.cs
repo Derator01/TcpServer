@@ -24,8 +24,6 @@ public class Client
     public delegate void OnMessage(MessageEventArgs e);
     public event OnMessage? MessageCame;
 
-    protected readonly byte[] HandshakePacket = new byte[PACKET_SIZE - 1];
-
     public Client(IPEndPoint ipEndPoint, string name)
     {
         _tcpClient = new();
@@ -58,7 +56,7 @@ public class Client
         }
     }
 
-    private void SendHandShakeMessage() => SendMessage(new Message(HandshakePacket, MessageHandling.MessageType.HandShake));
+    private void SendHandShakeMessage() => SendMessage(new Message(Name, MessageHandling.MessageType.HandShake));
 
     public bool IsMessagePending() => _tcpClient.GetStream().DataAvailable;
 
