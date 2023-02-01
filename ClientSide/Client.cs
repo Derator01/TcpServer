@@ -47,7 +47,7 @@ public class Client
         try
         {
             _tcpClient.Connect(EndPoint);
-
+            Console.WriteLine("Helllalrst");
             SendHandShakeMessage();
 
             new Thread(ClientCheckForMessageLoop).Start();
