@@ -112,7 +112,7 @@ public class Server
                 OnCommandPacket(client, message);
                 break;
             case MessageHandling.MessageType.HandShake:
-                client.Name = message.Text;
+                client.Name = message.Text.Trim();
                 break;
             default:
                 throw new NotImplementedException();
