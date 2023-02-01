@@ -38,6 +38,15 @@ public record Message
 
 public static class MessageHandling
 {
+    public static string RemoveZeros(this string self)
+    {
+        for (int i = 0; i < self.Length; i++)
+
+            if (self[i] == '\0')
+                return self.Remove(i, self.Length);
+        return self;
+    }
+
     public enum MessageType : byte
     {
         HandShake = 0x01,

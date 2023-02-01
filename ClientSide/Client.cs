@@ -76,7 +76,7 @@ public class Client
         if (!Connected)
             return;
 
-        using var stream = _tcpClient.GetStream();
+        var stream = _tcpClient.GetStream();
 
         stream.Write(message.ToBytes());
     }

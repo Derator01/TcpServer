@@ -75,8 +75,16 @@ public class Server
     {
         Client client = new(Listener.AcceptTcpClient(), $"TEMPORARY {new Random().Next()}");
         _clients.Add(client);
+        new Timer(new TimerCallback(ClientCheckTimeOut), client, 1000, Timeout.Infinite);
+    }
 
-        ClientConnected?.Invoke(client);
+    private void ClientCheckTimeOut(object client)
+    {
+        Client cl = (Client)client;
+
+        var other = _clients.FirstOrDefault(c => { return c == cl; });
+        if (other is not null && other.Name.StartsWith("TEMPORARY"))
+            cl.Disconnect();
     }
 
     private void MessageRecieveLoop()
@@ -112,11 +120,18 @@ public class Server
                 OnCommandPacket(client, message);
                 break;
             case MessageHandling.MessageType.HandShake:
-                client.Name = message.Text.Trim();
+                OnClientConnect(client, message);
                 break;
             default:
                 throw new NotImplementedException();
         }
+    }
+
+    private void OnClientConnect(Client client, Message message)
+    {
+        client.Name = message.Text.RemoveZeros();
+
+        ClientConnected?.Invoke(client);
     }
 
     private void OnCommandPacket(Client sender, Message message)
@@ -134,11 +149,11 @@ public class Server
         if (name is null)
             return;
 
-        _clients.Where(client => client.Name == name).FirstOrDefault()?.SendMessage(message);
+        _clients.FirstOrDefault(client => client.Name == name)?.SendMessage(message);
     }
     public virtual void SendMessage(Message message, Func<Client, bool> predicate)
     {
-        _clients.Where(predicate).FirstOrDefault()?.SendMessage(message);
+        _clients.FirstOrDefault(predicate)?.SendMessage(message);
     }
     public virtual void SendMessageToEveryone(Message message)
     {
